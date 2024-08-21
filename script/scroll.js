@@ -1,41 +1,50 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded" , ()=> {
 
-    // [봄,여름,가을,겨울] 각 섹션
-    const sections = Array.from( document.querySelectorAll('main > section') ); //[ 봄,여름,가을,겨울 ]  즉,[0,1,2,3]
+    //[봄,여름,가을,가을]  ...연산자 (스프레드연산자)는 콜렉션을 배열(Array from())로 전환한다.
+    const seasons =  [ ...document.querySelectorAll('main section')];   //HTMLCollection
 
-    sections.forEach( (i, j) => {
-        // 개별적으로 Wheel 이벤트 적용
-        i.addEventListener('wheel', e => {
+    seasons.forEach( ( i , j )=>{
 
-            e.preventDefault(); //기본동작 무력화
-            let d = e.deltaY || e.wheelDelta;
+        //각각 휠이벤트가 발생
+        let yy = false;
+        i.addEventListener("wheel", e =>{
+            if(yy) return;
+            yy = true;
+            //기본동작을 무력화 시킴 (한장면씩 보기 해야 함)
+            e.preventDefault();
 
-            // 스크롤바의 윗쪽 Y위치
-            let y = window.scrollY;
+            //휠을 올리거나 내렸을때의 휠Y값 (위로 올리면 마이너스값/ 아래로 내리면 플러스값이 반환됨)
+            let d = e.deltaY;           
 
-            // [0,1,2,3] 봄,여름,가을,겨울 섹션
-            let c = sections[j];
-            
-            // 마우스휠을 위에서 아래로
-            if (d > 0) {
-                let n = c.nextElementSibling;//다음형제요소
-                if (n) {
-                    y = n.getBoundingClientRect().top + window.scrollY;
-                }
-            // 마우스휠을 아래에서 위로
-            } else {
-                let p = c.previousElementSibling;//이전형제요소
-                if (p) {
-                    y = p.getBoundingClientRect().top + window.scrollY;
+            //스크롤바의 윗쪽Y값
+            const y1 = window.scrollY;  
+            let y2 = y1;
+         
+            //휠을 아래로 내릴때,
+            if( d > 0) {
+                const n = i.nextElementSibling; //다음형제요소
+                if ( n )  {
+                    y2 = n.getBoundingClientRect().top + y1;                 
                 }
             }
-            
-            //부드럽게 위치이동_  scrollTo({}); 옵션객체를 사용한 세밀한 조정
+
+            //휠을 위로 올릴때,
+            else if( d < 0) {
+                const p = i.previousElementSibling; //이전형제요소
+                if ( p ) {
+                    y2 = p.getBoundingClientRect().top + y1;                    
+                }
+            }           
+
+            //부드럽게 위치이동
             window.scrollTo({
-                top: y ,
-                behavior: 'smooth'
+                top: y2 ,
+                behavior : "smooth"
             });
+
+            yy = false;
         });
     });
 
-}); // end
+
+});//end....................
