@@ -1,51 +1,46 @@
-document.addEventListener('DOMContentLoaded', ()  => {
+document.addEventListener("DOMContentLoaded", ()=> {
 
-    //...스프레드연산자는 Array.from()을 대체한다. 즉, htmlcollection을 배열로 변환한다.
-    const $a = [ ...document.getElementsByTagName('a') ];  // [<a> , <a> , <a> ]
+    //봄/여름/가을/겨울 텍스트가 들어있는 <a>
+    const $a =  [ ...document.querySelectorAll('li a') ]; //스프레드연산자는 콜렉션을 배열처리한다.
 
-    // 왼쪽 메뉴 클릭시 활성화된다.
-    $a.forEach( i =>  {
-        i.addEventListener('click', () => {
+    //왼쪽 메뉴 클릭시 활성화 되도록 한다.
+    $a.forEach( i => {
+        i.addEventListener("click" , ()=>{
 
-            //클릭한 <a>에서 <ul>을 찾은후 클릭한 <a>의 부모인 <li>의 index 번호를 알아낸다
-            // ... 스프레드 연산자는 <li>를 배열로 변환한다. [ <li> ,  <li> ,  <li>]
-           const n = [...i.parentElement.parentElement.children].indexOf( i.parentElement );           
+            //클릭한 <a>에서 <ul>찾아가서, 그 자식중 클릭한 <a>가 있는 <li>의 index번호를 찾아낸다.
+            //다시 배열로 만들어야 함.  [0,1,2,3]
+            const n = [...i.parentElement.parentElement.children].indexOf(i.parentElement);
+           
+            //메뉴의 모든 클레스 삭제, 예) class="menuOver m1"          
+            $a.forEach( j => j.removeAttribute('class') );
 
-            // 점검 (왼쪽 메뉴클릭시  index번호 표시됨)
-            // console.log(n); // [0,1,2,3]
-
-            // 메뉴의 모든 클래스 삭제
-            $a.forEach( j => [ ...j.classList ].forEach( z => j.classList.remove(z) ) );
-
-            // 클릭한 메뉴만 2개의 클래스를 추가한다.
-            i.classList.add('menuOver', `m${n + 1}`); // 예:m${n+1} => m1,m2,m3,m4
+            //클릭한 <a>에 2개의 클래스를 추가
+            i.classList.add( "menuOver" ,  `m${n+1}` ); //m1,m2,m3,m4
         });
     });
 
-    // 휠(스크롤) 위치에 따라 왼쪽 메뉴 활성화.
-    document.addEventListener('scroll', () => {
+    let xx = true;
+    //휠 동작에 따른 메뉴 <a> 활성화
+    document.addEventListener("wheel" , e => {
 
-        // 브라우저 높이
+        e.preventDefault();
+
+        if( xx === false) return; //아래의 구문이 완전히 끝나기 전까지 중복기능 방지.
+        xx = false;
+        //브라우저 높이 (왜? 화면에 꽉차는 디자인)
         const h1 = window.innerHeight;
 
-        // 스크롤 내린 높이
+        //스크롤을 내린 또는 올린 후의 높이
         const t1 = document.documentElement.scrollTop || document.body.scrollTop;
 
-        // 계산: 스크롤 높이를 브라우저 높이로 나눈 정수값_ 예: 2.3 => 2 , 2.9 => 2
-        const h = Math.trunc(t1 / h1);
+        //계산_ 스크롤높이를 브라우저높이로 나눈 정수값_ 소수점 무시하는 메소드는 객체.trunch();
+        const h = Math.trunc( t1 / h1 );  //0,1,2,3
 
-        // 점검(마우스 휠 사용시 index번호 표시됨)
-        console.log(h);
-
-        // 모든 클래스 삭제
-        $a.forEach( j => [ ...j.classList ].forEach( z => j.classList.remove(z) ) );
-
-        // 해당 메뉴만 클래스 추가
-        const li = document.getElementsByTagName('li');
-
-        if (li[h]) {
-            li[h].querySelector('a').classList.add('menuOver', `m${ h + 1 }`);
-        }
+         //메뉴의 모든 클레스 삭제, 예) class="menuOver m1"
+         $a.forEach( j =>  [...j.classList].forEach( z =>   j.classList.remove(z) ) );
+      
+        if ( $a[h] )   $a[h].classList.add('menuOver' , `m${h+1}`);
+        xx = true;
     });
 
-}); // end.............
+});//end.......
